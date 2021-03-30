@@ -47,30 +47,5 @@ namespace DB_mini_Project
                 return dataTable;
             }
         }
-
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-           
-            if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
-            StreamReader sr = new StreamReader(openFileDialog1.FileName);
-            string buf = sr.ReadLine();
-            string[] sArr = buf.Split(',');
-            for (int i = 0; i < sArr.Length; i++)
-            {
-                dataGrid.Columns.Add(sArr[i], sArr[i]);
-            }
-            while (true)
-            {
-                buf = sr.ReadLine();
-                if (buf == null) break;
-                sArr = buf.Split(',');
-                dataGrid.Rows.Add(sArr);
-
-            }
-            sr.Close();
-
-
-        }
     }
 }
