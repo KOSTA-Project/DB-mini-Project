@@ -31,12 +31,20 @@ namespace DB_mini_Project
             string path = System.IO.Path.Combine(dir, html);
             webBrowser1.Navigate(path);
         }
+        private void init()     //초기화
+        {
+            tuples.Clear();
+            listBox1.Items.Clear();
+            webBrowser1.Document.InvokeScript("clearMarkers");  //지도에 표시된 마커 지우기
+            //필터 콤보박스 초기화 필요
+        }
 
 
         // 현재 작업 : 검색창 입력 후 리스트박스 선택, 데이터 멥에 찍기.
 
-         private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
          {
+            init();
             string address = textBox1.Text;
 
              string site = "https://dapi.kakao.com/v2/local/search/keyword.json";
@@ -61,19 +69,25 @@ namespace DB_mini_Project
 
              for(int i = 0; i < buf.Length; i++)
             {
+                double x = double.Parse(docs[i]["x"]);      //lng
+                double y = double.Parse(docs[i]["y"]);      //lat
+                object[] arr = new object[] { y, x };
+
                 listBox1.Items.Add(docs[i]["place_name"]);
-                tuples.Add(new Tuple<string, double, double>(docs[i]["place_name"], double.Parse(docs[i]["x"]), double.Parse(docs[i]["y"])));
+                tuples.Add(new Tuple<string, double, double>(docs[i]["place_name"], x, y));
+                
+                webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가
             }
-
-         }
-
+             //리스트 첫 요소 위치를 지도 중심으로 
+            webBrowser1.Document.InvokeScript("panTo", new object[] { tuples[0].Item3, tuples[0].Item2 });
+        }
 
         private void listBox1_MouseClick(object sender, MouseEventArgs e)
         {
             int idx = listBox1.SelectedIndex;
             var sel = tuples[idx];
-            object[] arr = new object[] { sel.Item3, sel.Item2 };
-            object res = webBrowser1.Document.InvokeScript("panTo", arr);
+            object res = webBrowser1.Document.InvokeScript("panTo", new object[] { sel.Item3, sel.Item2 });
         }
+
     }
 }
