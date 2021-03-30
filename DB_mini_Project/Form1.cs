@@ -33,6 +33,8 @@ namespace DB_mini_Project
         }
 
 
+        // 현재 작업 : 검색창 입력 후 리스트박스 선택, 데이터 멥에 찍기.
+
          private void button1_Click(object sender, EventArgs e)
          {
             string address = textBox1.Text;
@@ -64,6 +66,7 @@ namespace DB_mini_Project
             }
 
          }
+
 
         private void listBox1_MouseClick(object sender, MouseEventArgs e)
         {
