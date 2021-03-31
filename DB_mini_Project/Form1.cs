@@ -64,20 +64,27 @@ namespace DB_mini_Project
              String json = reader.ReadToEnd();
              stream.Close();
 
+
              JavaScriptSerializer js = new JavaScriptSerializer();
              dynamic dob = js.Deserialize<dynamic>(json);
              dynamic docs = dob["documents"];
              object[] buf = docs;
-            
-             double x = double.Parse(docs[0]["x"]);      //lng
-             double y = double.Parse(docs[0]["y"]);      //lat
-             object[] arr = new object[] { docs[0]["place_name"].ToString(), y, x };
-             tuples.Add(new Tuple<string, double, double>(docs[0]["place_name"], x, y));
 
-             webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가
-             //리스트 첫 요소 위치를 지도 중심으로
-             webBrowser1.Document.InvokeScript("panTo", new object[] { tuples[0].Item3, tuples[0].Item2 });
+             for(int i = 0; i < buf.Length; i++)
+            {
+                double x = double.Parse(docs[i]["x"]);      //lng
+                double y = double.Parse(docs[i]["y"]);      //lat
+                object[] arr = new object[] {docs[i]["place_name"].ToString() , y, x };
 
+                Console.WriteLine(docs[i]["address_name"]);
+
+                listBox1.Items.Add(docs[i]["place_name"]);
+                tuples.Add(new Tuple<string, double, double>(docs[i]["place_name"], x, y));
+                
+                webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가
+            }
+             //리스트 첫 요소 위치를 지도 중심으로 
+            webBrowser1.Document.InvokeScript("panTo", new object[] { tuples[0].Item3, tuples[0].Item2 });
         }
 
         private void listBox1_MouseClick(object sender, MouseEventArgs e)
