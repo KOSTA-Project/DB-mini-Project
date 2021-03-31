@@ -33,9 +33,6 @@ namespace DB_mini_Project
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // button1
@@ -65,47 +62,20 @@ namespace DB_mini_Project
             // 
             // listBox1
             // 
+            this.listBox1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.listBox1.Font = new System.Drawing.Font("굴림", 10F);
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.ItemHeight = 12;
             this.listBox1.Location = new System.Drawing.Point(508, 117);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(265, 304);
+            this.listBox1.Size = new System.Drawing.Size(265, 303);
             this.listBox1.TabIndex = 3;
             this.listBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseClick);
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(79, 48);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(83, 20);
-            this.comboBox1.TabIndex = 4;
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(182, 47);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(89, 20);
-            this.comboBox2.TabIndex = 5;
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(292, 48);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(80, 20);
-            this.comboBox3.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.comboBox3);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.webBrowser1);
             this.Controls.Add(this.textBox1);
@@ -123,9 +93,6 @@ namespace DB_mini_Project
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox3;
     }
 }
 

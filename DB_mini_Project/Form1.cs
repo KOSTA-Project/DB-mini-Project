@@ -17,8 +17,7 @@ using System.IO;
 
 namespace DB_mini_Project
 {
-    public partial class Form1 : Form { 
-
+    public partial class Form1 : Form {
         List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>();
         public Form1()
         {
@@ -37,6 +36,10 @@ namespace DB_mini_Project
             listBox1.Items.Clear();
             webBrowser1.Document.InvokeScript("clearMarkers");  //지도에 표시된 마커 지우기
             //필터 콤보박스 초기화 필요
+        }
+
+        private void plotMap(){
+
         }
 
 
@@ -71,7 +74,9 @@ namespace DB_mini_Project
             {
                 double x = double.Parse(docs[i]["x"]);      //lng
                 double y = double.Parse(docs[i]["y"]);      //lat
-                object[] arr = new object[] { y, x };
+                object[] arr = new object[] {docs[i]["place_name"].ToString() , y, x };
+
+                Console.WriteLine(docs[i]["address_name"]);
 
                 listBox1.Items.Add(docs[i]["place_name"]);
                 tuples.Add(new Tuple<string, double, double>(docs[i]["place_name"], x, y));
