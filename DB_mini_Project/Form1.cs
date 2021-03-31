@@ -47,44 +47,53 @@ namespace DB_mini_Project
 
         private void button1_Click(object sender, EventArgs e)
          {
-            init();
-            string address = textBox1.Text;
+            try
+            {
+                init();
+                string address = textBox1.Text;
 
-             string site = "https://dapi.kakao.com/v2/local/search/keyword.json";
-             string query = string.Format("{0}?query={1}", site, address);
-             WebRequest request = WebRequest.Create(query);
+                string site = "https://dapi.kakao.com/v2/local/search/keyword.json";
+                string query = string.Format("{0}?query={1}", site, address);
+                WebRequest request = WebRequest.Create(query);
 
-             string rkey = "4925a34ce72e895ab1290119ee11f9e1";
-             string header = "KakaoAK " + rkey;
-             request.Headers.Add("Authorization", header);
+                string rkey = "4925a34ce72e895ab1290119ee11f9e1";
+                string header = "KakaoAK " + rkey;
+                request.Headers.Add("Authorization", header);
 
-             WebResponse response = request.GetResponse();
-             Stream stream = response.GetResponseStream();
-             StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-             String json = reader.ReadToEnd();
-             stream.Close();
+                WebResponse response = request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                String json = reader.ReadToEnd();
+                stream.Close();
 
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                dynamic dob = js.Deserialize<dynamic>(json);
+                dynamic docs = dob["documents"];
 
-             JavaScriptSerializer js = new JavaScriptSerializer();
-             dynamic dob = js.Deserialize<dynamic>(json);
-             dynamic docs = dob["documents"];
+                double x = double.Parse(docs[0]["x"]);      //lng
+                double y = double.Parse(docs[0]["y"]);      //lat
+                object[] arr = new object[] { docs[0]["place_name"].ToString(), y, x };
 
-            double x = double.Parse(docs[0]["x"]);      //lng
-            double y = double.Parse(docs[0]["y"]);      //lat
-            object[] arr = new object[] { docs[0]["place_name"].ToString(), y, x };
+                tuples.Add(new Tuple<string, double, double>(docs[0]["place_name"], x, y));
+                
+                webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
+                webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
 
-            tuples.Add(new Tuple<string, double, double>(docs[0]["place_name"], x, y));
-            webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가
-            //리스트 첫 요소 위치를 지도 중심으로
-            webBrowser1.Document.InvokeScript("panTo",new object[] {y, x});
-
+            }
+            catch(Exception e1)
+            {   //검색결과 없는 경우(바른 결과인경우-> 해당 영역에 사용처 없는 경우)
+                //
+                MessageBox.Show(e1.Message);
+            }
         }
 
         private void listBox1_MouseClick(object sender, MouseEventArgs e)
         {
             int idx = listBox1.SelectedIndex;
+            if (idx < 0 || idx > listBox1.Items.Count - 1) return;  //유효하지 않은 클릭 시 
             var sel = tuples[idx];
             object res = webBrowser1.Document.InvokeScript("panTo", new object[] { sel.Item3, sel.Item2 });
+   
         }
 
     }
