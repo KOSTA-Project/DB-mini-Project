@@ -32,11 +32,13 @@ namespace DB_mini_Project
             string html = "map.html";
             string dir = System.IO.Directory.GetCurrentDirectory();
             string path = System.IO.Path.Combine(dir, html);
+            Console.WriteLine(path);
             webBrowser1.Navigate(path);
         }
         private void init()     //초기화
         {
             tuples.Clear();
+            search_result.Clear();
             listBox1.Items.Clear();
             webBrowser1.Document.InvokeScript("clearMarkers");  //지도에 표시된 마커 지우기
             //필터 콤보박스 초기화 필요
@@ -60,31 +62,36 @@ namespace DB_mini_Project
                 listBox1.Items.Add(store_name);
 
                 string query = string.Format("{0}?query={1}", site, store_address);
+                try{
+                    WebRequest request = WebRequest.Create(query);
 
-                WebRequest request = WebRequest.Create(query);
+                    string rkey = "4925a34ce72e895ab1290119ee11f9e1";
+                    string header = "KakaoAK " + rkey;
+                    request.Headers.Add("Authorization", header);
 
-                string rkey = "4925a34ce72e895ab1290119ee11f9e1";
-                string header = "KakaoAK " + rkey;
-                request.Headers.Add("Authorization", header);
+                    WebResponse response = request.GetResponse();
+                    Stream stream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                    String json = reader.ReadToEnd();
+                    stream.Close();
 
-                WebResponse response = request.GetResponse();
-                Stream stream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                String json = reader.ReadToEnd();
-                stream.Close();
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    dynamic dob = js.Deserialize<dynamic>(json);
+                    dynamic docs = dob["documents"];
 
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                dynamic dob = js.Deserialize<dynamic>(json);
-                dynamic docs = dob["documents"];
+                    double x = double.Parse(docs[0]["x"]);      //lng
+                    double y = double.Parse(docs[0]["y"]);      //lat
+                    object[] arr = new object[] { store_name, y, x };
 
-                double x = double.Parse(docs[0]["x"]);      //lng
-                double y = double.Parse(docs[0]["y"]);      //lat
-                object[] arr = new object[] { store_name, y, x };
+                    tuples.Add(new Tuple<string, double, double>(store_name, x, y));
 
-                tuples.Add(new Tuple<string, double, double>(store_name, x, y));
-
-                webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
-                webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
+                    webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
+                    webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
+                }
+                catch(Exception err)
+                {   //검색결과 없는 경우(바른 결과인경우-> 해당 영역에 사용처 없는 경우)
+                    MessageBox.Show(err.Message);
+                }
             }
         }
 
