@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <style type="text/css">
 html, body { width: 99%; height: 98%; }
@@ -13,23 +13,24 @@ html, body { width: 99%; height: 98%; }
 <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=0d592c297eef290827df502da7ae1af3&libraries=services"></script>
 <script>
 	var mapContainer = document.getElementById('map'), mapOption = { center: new kakao.maps.LatLng(37.42046, 127.12666), level: 5 };
+
 	var map = new kakao.maps.Map(mapContainer, mapOption);
 	var markers = [];
 		
-	function addMarker(addr,lat,lng){	//해당좌표에 마커 생성 및 마커배열에 넣기
+	function addMarker(addr,lat,lng){    //해당좌표에 마커 생성 및 마커배열에 넣기
 		var marker = new kakao.maps.Marker({
-		    position: new kakao.maps.LatLng(lat, lng), // 마커의 좌표
-		    map: map, // 마커를 표시할 지도 객체
+		    position: new kakao.maps.LatLng(lat, lng),   // 마커의 좌표
+		    map: map    // 마커를 표시할 지도 객체
 		});
 
 		var target = '<div>'+addr+'</div>'
 
-		var infowindow = new kakao.maps.InfoWindow({
+		var infowindow = new kakao.maps.InfoWindow({	  //마우스 오버일 때 뜨는 창에 대한 정보
 			content: target
 		});
-		kakao.maps.event.addListener(marker,'mouseover',makeOverListener(map,marker,infowindow));
-		kakao.maps.event.addListener(marker,'mouseout',makeOutListener(infowindow));
-		marker.setMap(map);
+		kakao.maps.event.addListener(marker,'mouseover',makeOverListener(map,marker,infowindow)); 		// 마우스가 마커 위일 때 이벤트 발생 
+		kakao.maps.event.addListener(marker,'mouseout',makeOutListener(infowindow));			//마우스가 마커 밖일 때 이벤트 발생
+		
 		markers.push(marker);
 	}
 
@@ -39,54 +40,23 @@ html, body { width: 99%; height: 98%; }
    		 };
 	}
 
-	function makeOutListener(infowindow) {
+	function makeOutListener(infowindow) {   // 마우스가 마커 밖일 때
     		return function() {
         		infowindow.close();
     		};
 	}
-
-
 
 	function clearMarkers(){	//지도에 모든 마커 삭제
 		for(var i=0; i<markers.length;i++){
 			markers[i].setMap(null);
 		}
 		markers=[];
-
 	}
 
-	function panTo(lat, lng) {
+	function panTo(lat, lng) {		// 해당 좌표로 지도 중심 이동
 		var loc = new kakao.maps.LatLng(lat, lng);
     		map.panTo(loc);
 	}
-	function zoomIn()
-	{
-		var level = map.getLevel();
-		map.setLevel(level-1);
-	}
-
-	function zoomOut()
-	{
-		var level = map.getLevel();
-		map.setLevel(level+1);
-	}
-
-	function geo(address) {
-		var geocoder = new kakao.maps.services.Geocoder();
-		geocoder.addressSearch(address, function(result, status)
-		{
-     			if (status == kakao.maps.services.Status.OK) {
-        			var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-        			var marker = new kakao.maps.Marker({ map: map, position: coords });
-        			var infowindow = new kakao.maps.InfoWindow({
-            				content: '<div style="width:150px;text-align:center;padding:6px 0;">여기!!</div>'
-        			});
-        			infowindow.open(map, marker);
-        			map.setCenter(coords);
-    			}
-		});
-  	}
-
 </script>
 </body>
 </html>
