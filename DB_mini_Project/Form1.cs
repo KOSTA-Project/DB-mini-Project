@@ -53,38 +53,43 @@ namespace DB_mini_Project
 
             string site = "https://dapi.kakao.com/v2/local/search/address.json";
 
+            // 검색 결과 리스트를 조회.
             for (int i = 0; i < search_result.Count; i++)
             {
-                
+                // 주소를 활용하여 쿼리문 작성.
                 string store_name = search_result[i].Item1;
                 string store_address = search_result[i].Item2;
-                Console.WriteLine(store_name);
+                string query = $"{site}?query={store_address}";
+
+                // 검색 요청을 보냅니다.
+                WebRequest request = WebRequest.Create(query);
+                string rkey = "4925a34ce72e895ab1290119ee11f9e1";
+                string header = "KakaoAK " + rkey;
+                request.Headers.Add("Authorization", header);
+
+                // 리스트 박스에는 상호명만 추가.
                 listBox1.Items.Add(store_name);
 
-                string query = string.Format("{0}?query={1}", site, store_address);
-                try{
-                    WebRequest request = WebRequest.Create(query);
-
-                    string rkey = "4925a34ce72e895ab1290119ee11f9e1";
-                    string header = "KakaoAK " + rkey;
-                    request.Headers.Add("Authorization", header);
-
-                    WebResponse response = request.GetResponse();
+                // 검색 결과가 없을 수 있는 예외 처리.
+                try
+                {
+                    WebResponse response = request.GetResponse();   
                     Stream stream = response.GetResponseStream();
-                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                    String json = reader.ReadToEnd();
+                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);  // 받아온 응답을 읽어오기.
+                    String json = reader.ReadToEnd(); 
                     stream.Close();
 
                     JavaScriptSerializer js = new JavaScriptSerializer();
-                    dynamic dob = js.Deserialize<dynamic>(json);
-                    dynamic docs = dob["documents"];
+                    dynamic dob = js.Deserialize<dynamic>(json);    //json 파일을 효과적으로 쓰기위해 역직렬화.
+                    dynamic docs = dob["documents"];                //documents의 벨류들만 저장.
 
                     double x = double.Parse(docs[0]["x"]);      //lng
                     double y = double.Parse(docs[0]["y"]);      //lat
                     object[] arr = new object[] { store_name, y, x };
-
+                    
+                    // html 파일 내부의 javascript 함수 실행을 위한 전처리.  
                     tuples.Add(new Tuple<string, double, double>(store_name, x, y));
-
+                    // 내부의 함수들 실행.
                     webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
                     webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
                 }
@@ -102,49 +107,6 @@ namespace DB_mini_Project
          {
             init();
             plotMap();
-            
-            /*
-            try
-            {
-                init();
-                string address = textBox1.Text;
-
-                string site = "https://dapi.kakao.com/v2/local/search/address.json";
-                string query = string.Format("{0}?query={1}", site, address);
-                WebRequest request = WebRequest.Create(query);
-
-                string rkey = "4925a34ce72e895ab1290119ee11f9e1";
-                string header = "KakaoAK " + rkey;
-                request.Headers.Add("Authorization", header);
-
-                WebResponse response = request.GetResponse();
-                Stream stream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                String json = reader.ReadToEnd();
-                stream.Close();
-
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                dynamic dob = js.Deserialize<dynamic>(json);
-                dynamic docs = dob["documents"];
-
-                double x = double.Parse(docs[0]["x"]);      //lng
-                double y = double.Parse(docs[0]["y"]);      //lat
-                string addr = docs[0]["address_name"].ToString();
-
-
-                object[] arr = new object[] { addr, y, x };
-
-                tuples.Add(new Tuple<string, double, double>(addr, x, y));
-                
-                webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
-                webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
-
-            }
-            catch(Exception e1)
-            {   //검색결과 없는 경우(바른 결과인경우-> 해당 영역에 사용처 없는 경우)
-                //
-                MessageBox.Show(e1.Message);
-            }*/
         }
 
 
