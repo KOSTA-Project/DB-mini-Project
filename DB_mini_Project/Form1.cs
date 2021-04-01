@@ -20,7 +20,7 @@ namespace DB_mini_Project
     public partial class Form1 : Form {
         List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>();
         
-        List<Tuple<string, string>> search_result = new List<Tuple<string, string>>(); // 검색 결과가 담기는 List<List<상호명, 주소>>
+        List<Tuple<string, string>> search_result = new List<Tuple<string, string>>(); // 검색 결과가 담기는 List<Tuple<상호명, 주소>>
 
 
         public Form1()
@@ -46,7 +46,7 @@ namespace DB_mini_Project
 
         private void plotMap(){
             // 예시 : 이런식으로 Search팀에서 값들을 넣었을 때. 
-            search_result.Add(new Tuple<string, string>("(주) 에이치엔에스월드", "성남시 수정구 복정로 91, 1층 101호 (쎄븐빌딩)	"));
+            search_result.Add(new Tuple<string, string>("(네오프런트)취영루	", "성남시 분당구 양현로 164(이매동,성남상공회의소 5층)"));
             search_result.Add(new Tuple<string, string>("(주)굿프랜드", "경기도 성남시 분당구 내정로113번길 4 2층 204호"));
             search_result.Add(new Tuple<string, string>("(주)두영상사 (성남지점)", "경기도 성남시 중원구 산성대로 266 (중앙동,1층)"));
             search_result.Add(new Tuple<string, string>("(주)레드미트코리아", "경기도 성남시 수정구 시민로 239 ."));
