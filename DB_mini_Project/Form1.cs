@@ -75,10 +75,7 @@ namespace DB_mini_Project
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             StreamReader sr = new StreamReader("File_modi.csv", System.Text.Encoding.GetEncoding(949));
-
-
             string buf = sr.ReadLine();
             string[] sArr = buf.Split(',');
 
