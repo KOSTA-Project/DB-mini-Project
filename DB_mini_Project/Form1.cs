@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using System.IO;
-using System.Data.OleDb;
-using System.Globalization;
+using System.Web.Script.Serialization;
+using System.Net;
 
 namespace DB_mini_Project
 {
@@ -23,6 +23,7 @@ namespace DB_mini_Project
         List<String> pay_list = new List<string>(); // "결제" 데이터가 저장되는 변수
 
         List<Tuple<string, string>> search = new List<Tuple<string, string>>();
+        List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>();
 
         String location = ""; // "구" 를 저장하는 변수
         String location2 = ""; // "동" 을 저장하는 변수
@@ -40,23 +41,97 @@ namespace DB_mini_Project
         {
             InitializeComponent();
             textBox1.KeyDown += Enter_KeyDown;
+            string html = "map.html";
+            string dir = System.IO.Directory.GetCurrentDirectory();
+            string path = System.IO.Path.Combine(dir, html);
+            Console.WriteLine(path);
+            webBrowser1.Navigate(path);
+        }
+        private void init()     //초기화
+        {
+            tuples.Clear();
+            search.Clear();
+            listBox1.Items.Clear();
+            webBrowser1.Document.InvokeScript("clearMarkers");  //지도에 표시된 마커 지우기
+            //필터 콤보박스 초기화 필요
+        }
+
+        private void plotMap()
+        {
+
+            string site = "https://dapi.kakao.com/v2/local/search/address.json";
+
+            // 검색 결과 리스트를 조회.
+            for (int i = 0; i < search.Count; i++)
+            {
+                // 주소를 활용하여 쿼리문 작성.
+                string store_name = search[i].Item1;
+                string store_address = search[i].Item2;
+                string query = $"{site}?query={store_address}";
+
+                // 검색 요청을 보냅니다.
+                WebRequest request = WebRequest.Create(query);
+                string rkey = "4925a34ce72e895ab1290119ee11f9e1";
+                string header = "KakaoAK " + rkey;
+                request.Headers.Add("Authorization", header);
+
+                // 리스트 박스에는 상호명만 추가.
+                listBox1.Items.Add(store_name);
+
+                // 검색 결과가 없을 수 있는 예외 처리.
+                try
+                {
+                    WebResponse response = request.GetResponse();
+                    Stream stream = response.GetResponseStream();
+                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);  // 받아온 응답을 읽어오기.
+                    String json = reader.ReadToEnd();
+                    stream.Close();
+
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    dynamic dob = js.Deserialize<dynamic>(json);    //json 파일을 효과적으로 쓰기위해 역직렬화.
+                    dynamic docs = dob["documents"];                //documents의 벨류들만 저장.
+
+                    double x = double.Parse(docs[0]["x"]);      //lng
+                    double y = double.Parse(docs[0]["y"]);      //lat
+                    object[] arr = new object[] { store_name, y, x };
+
+                    // html 파일 내부의 javascript 함수 실행을 위한 전처리.  
+                    tuples.Add(new Tuple<string, double, double>(store_name, x, y));
+                    // 내부의 함수들 실행.
+                    webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
+                    webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
+                }
+                catch (Exception err)
+                {   //검색결과 없는 경우(바른 결과인경우-> 해당 영역에 사용처 없는 경우)
+                    //너무 많은 결과 값을 가질 경우
+                    MessageBox.Show(err.Message);
+                }
+            }
+        }
+
+        private void listBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            int idx = listBox1.SelectedIndex;
+            if (idx < 0 || idx > listBox1.Items.Count - 1) return;  //유효하지 않은 클릭 시 
+            var sel = tuples[idx];
+            object res = webBrowser1.Document.InvokeScript("panTo", new object[] { sel.Item3, sel.Item2 });
+
         }
 
         // 검색 버튼입니다.
         private void button1_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Clear();
-
-
+            init();
             data.ForEach(d =>
             {
+             
                 if ((d[3].Equals(location) || location.Equals(""))
                 && (d[4].Equals(location2) || location2.Equals(""))
                 && (d[2].Equals(item) || item.Equals(""))
                 && (d[5].Equals(pay) || pay.Equals(""))
                     && ((d[1].Contains(textBox1.Text)) || (d[4].Contains(textBox1.Text)) || (d[5].Contains(textBox1.Text))))
                 {
-                    listBox1.Items.Add(d[1] + " " + d[7] + Environment.NewLine);
+                 //   listBox1.Items.Add(d[1] + " " + d[7] + Environment.NewLine);
 
                     string store_name = d[1];
                     string store_address = d[7];
@@ -64,6 +139,8 @@ namespace DB_mini_Project
 
                 }
             });
+            
+            plotMap();
 
 
 

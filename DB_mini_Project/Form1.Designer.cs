@@ -57,7 +57,7 @@ namespace DB_mini_Project
             this.webBrowser1.Location = new System.Drawing.Point(24, 373);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(422, 340);
+            this.webBrowser1.Size = new System.Drawing.Size(575, 340);
             this.webBrowser1.TabIndex = 36;
             // 
             // textBox1
@@ -86,7 +86,7 @@ namespace DB_mini_Project
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.flowLayoutPanel3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.flowLayoutPanel3.Location = new System.Drawing.Point(21, 265);
+            this.flowLayoutPanel3.Location = new System.Drawing.Point(24, 280);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
             this.flowLayoutPanel3.Size = new System.Drawing.Size(804, 87);
             this.flowLayoutPanel3.TabIndex = 31;
@@ -112,10 +112,11 @@ namespace DB_mini_Project
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(472, 373);
+            this.listBox1.Location = new System.Drawing.Point(630, 373);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(372, 340);
+            this.listBox1.Size = new System.Drawing.Size(273, 340);
             this.listBox1.TabIndex = 34;
+            this.listBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseClick);
             // 
             // flowLayoutPanel2
             // 
