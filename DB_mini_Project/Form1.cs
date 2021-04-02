@@ -93,7 +93,7 @@ namespace DB_mini_Project
 
                     double x = double.Parse(docs[0]["x"]);      //lng
                     double y = double.Parse(docs[0]["y"]);      //lat
-                    object[] arr = new object[] { store_name, y, x };
+                    object[] arr = new object[] { store_name,store_address, y, x };
 
                     // html 파일 내부의 javascript 함수 실행을 위한 전처리.  
                     tuples.Add(new Tuple<string, double, double>(store_name, x, y));
@@ -104,6 +104,8 @@ namespace DB_mini_Project
                 catch (Exception err)
                 {   //검색결과 없는 경우(바른 결과인경우-> 해당 영역에 사용처 없는 경우)
                     //너무 많은 결과 값을 가질 경우
+                    Console.WriteLine(tuples.Count);
+                    Console.WriteLine(search.Count);
                     MessageBox.Show(err.Message);
                 }
             }
