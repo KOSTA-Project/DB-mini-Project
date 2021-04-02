@@ -17,14 +17,14 @@ namespace DB_mini_Project
 {
     public partial class Form1 : Form
     {
-        List<String[]> data = new List<String[]>(); // csv 파일 데이터 저장 리스트
+        List<String[]> data = new List<String[]>();     // csv 파일 데이터 저장 리스트
 
         List<String> location_list = new List<string>(); // "구" 데이터를 담는 리스트
         Dictionary<String, List<String>> location2_list = new Dictionary<string, List<string>>(); //"구"에 따른 "동" 데이터 리스트 (key:"구", value:"구"에 해당하는 "동" 리스트)
         List<String> item_list = new List<string>();     // "품목" 
         List<String> pay_list = new List<string>();      // "결제방식" 
 
-        Control[] BTN_location; // "구" 버튼 컨트롤
+        Control[] BTN_location; // "구" 버튼 컨트롤 배열
         Dictionary<String, Control[]> BTN_location2 = new Dictionary<string, Control[]>(); // "동" 
         Control[] BTN_item;     // "품목"
         Control[] BTN_pay;      // "결제방식"
@@ -48,20 +48,117 @@ namespace DB_mini_Project
             string dir = System.IO.Directory.GetCurrentDirectory();     //현 디렉토리
             string path = System.IO.Path.Combine(dir, html);            //디렉토리 + 파일명
 
-            webBrowser1.Navigate(path);
+            webBrowser1.Navigate(path); // 웹 브라우저 컨트롤에 로드
         }
-        private void init()     //초기화
+
+        // 초기화
+        private void init()
         {
             tuples.Clear();
             search.Clear();
             listBox1.Items.Clear();
             webBrowser1.Document.InvokeScript("clearMarkers");  //지도에 표시된 마커 지우기
-            //필터 콤보박스 초기화 필요
         }
 
+        // 데이터를 로드하고
+        // 검색할 데이터를 설정하는 부분입니다 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            StreamReader sr = new StreamReader("File_modi.csv", System.Text.Encoding.GetEncoding(949));
+            string buf = sr.ReadLine();
+            string[] sArr = buf.Split(',');
+
+            // 모든 데이터를 컬럼 별로 리스트에 저장
+            // data에는 모든 정보 저장
+            while (true)
+            {
+                buf = sr.ReadLine();
+                if (buf == null) break;
+
+                sArr = buf.Split(',');
+                location_list.Add(sArr[3]); //구
+                item_list.Add(sArr[2]);     //품목 
+                pay_list.Add(sArr[5]);      //결제 방식
+
+                if (!location2_list.ContainsKey(sArr[3]))   //키 값으로 현재의 "구"데이터가 없으면
+                {
+                    location2_list[sArr[3]] = new List<string>(); //새로운 리스트 생성
+                }
+                location2_list[sArr[3]].Add(sArr[4]);   //키 값("구")에 맞는 리스트에 "동"추가
+                data.Add(sArr);
+            }
+
+            //Distinct로 중복제거하여 컬럼별 필터값 추출
+            location_list = location_list.Distinct().ToList();
+            item_list = item_list.Distinct().ToList();
+            pay_list = pay_list.Distinct().ToList();
+
+            // "구"리스트의 값들을 보면서 각각에 대한 "동"리스트 중복 제거
+            // "동" 검색을 위해 "동"리스트 수만큼의 버튼 생성
+            foreach (String key in location_list)
+            {
+                location2_list[key] = location2_list[key].Distinct().ToList();
+                BTN_location2[key] = new Control[location2_list[key].Count];
+            }
+            //각각 리스트 수만큼 버튼컨트롤 생성
+            BTN_location = new Control[location_list.Count];
+            BTN_item = new Control[item_list.Count];
+            BTN_pay = new Control[pay_list.Count];
+
+            //
+            for (int i = 0; i < location_list.Count; i++)
+            {
+                BTN_location[i] = new Button();
+                BTN_location[i].Name = i.ToString();
+                BTN_location[i].Parent = this;
+                BTN_location[i].Size = new Size(90, 30);
+                BTN_location[i].Text = location_list[i];
+
+                BTN_location[i].Click += Btn_location_Click;
+
+                flowLayoutPanel1.Controls.Add(BTN_location[i]);
+
+            }
+
+            for (int i = 0; i < item_list.Count; i++)
+            {
+                BTN_item[i] = new Button();
+                BTN_item[i].Name = i.ToString();
+                BTN_item[i].Parent = this;
+                BTN_item[i].Size = new Size(90, 30);
+                BTN_item[i].Text = item_list[i];
+
+                BTN_item[i].Click += Btn_item_Click;
+
+                flowLayoutPanel3.Controls.Add(BTN_item[i]);
+
+            }
+
+            for (int i = 0; i < pay_list.Count; i++)
+            {
+                BTN_pay[i] = new Button();
+                BTN_pay[i].Name = i.ToString();
+                BTN_pay[i].Parent = this;
+                BTN_pay[i].Size = new Size(90, 30);
+                BTN_pay[i].Text = pay_list[i];
+
+                BTN_pay[i].Click += Btn_pay_Click;
+
+                flowLayoutPanel4.Controls.Add(BTN_pay[i]);
+
+            }
+
+
+            clear_location_btn();
+            clear_item_btn();
+            clear_pay_btn();
+            //clear_location2_btn();
+
+            sr.Close();
+
+        }
         private void plotMap()
         {
-
             string site = "https://dapi.kakao.com/v2/local/search/address.json";
 
             // 검색 결과 리스트를 조회.
@@ -149,100 +246,6 @@ namespace DB_mini_Project
         }
 
 
-        // 데이터를 로드하고
-        // 검색할 데이터를 설정하는 부분입니다 
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            StreamReader sr = new StreamReader("File_modi.csv", System.Text.Encoding.GetEncoding(949));
-            string buf = sr.ReadLine();
-            string[] sArr = buf.Split(',');
-
-            //모든 데이터 읽으면서 필터에 필요한 컬럼값 추출
-            while (true)
-            {
-                buf = sr.ReadLine();
-                if (buf == null) break;
-
-                sArr = buf.Split(',');
-                location_list.Add(sArr[3]); //구
-                item_list.Add(sArr[2]);     //품목 
-                pay_list.Add(sArr[5]);      //결제 방식
-
-                if (!location2_list.ContainsKey(sArr[3]))   //해당 "구"에 대한 "동"리스트가 없으면
-                {
-                    location2_list[sArr[3]] = new List<string>();
-                }
-                location2_list[sArr[3]].Add(sArr[4]);
-                data.Add(sArr);
-            }
-
-            //Distinct(): 중복 제거
-            location_list = location_list.Distinct().ToList();
-            item_list = item_list.Distinct().ToList();
-            pay_list = pay_list.Distinct().ToList();
-
-            foreach (String key in location_list)
-            {
-                location2_list[key] = location2_list[key].Distinct().ToList();
-                BTN_location2[key] = new Control[location2_list[key].Count];
-            }
-
-            BTN_location = new Control[location_list.Count];
-            BTN_item = new Control[item_list.Count];
-            BTN_pay = new Control[pay_list.Count];
-
-            for (int i = 0; i < location_list.Count; i++)
-            {
-                BTN_location[i] = new Button();
-                BTN_location[i].Name = i.ToString();
-                BTN_location[i].Parent = this;
-                BTN_location[i].Size = new Size(90, 30);
-                BTN_location[i].Text = location_list[i];
-
-                BTN_location[i].Click += Btn_location_Click;
-
-                flowLayoutPanel1.Controls.Add(BTN_location[i]);
-
-            }
-
-            for (int i = 0; i < item_list.Count; i++)
-            {
-                BTN_item[i] = new Button();
-                BTN_item[i].Name = i.ToString();
-                BTN_item[i].Parent = this;
-                BTN_item[i].Size = new Size(90, 30);
-                BTN_item[i].Text = item_list[i];
-
-                BTN_item[i].Click += Btn_item_Click;
-
-                flowLayoutPanel3.Controls.Add(BTN_item[i]);
-
-            }
-
-            for (int i = 0; i < pay_list.Count; i++)
-            {
-                BTN_pay[i] = new Button();
-                BTN_pay[i].Name = i.ToString();
-                BTN_pay[i].Parent = this;
-                BTN_pay[i].Size = new Size(90, 30);
-                BTN_pay[i].Text = pay_list[i];
-
-                BTN_pay[i].Click += Btn_pay_Click;
-
-                flowLayoutPanel4.Controls.Add(BTN_pay[i]);
-
-            }
-
-
-            clear_location_btn();
-            clear_item_btn();
-            clear_pay_btn();
-            //clear_location2_btn();
-
-            sr.Close();
-
-        }
 
 
 
