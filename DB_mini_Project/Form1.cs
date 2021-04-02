@@ -18,12 +18,12 @@ namespace DB_mini_Project
     public partial class Form1 : Form
     {
         List<String> location_list = new List<string>(); // "구" 데이터가 저장되는 변수
-        Dictionary<String, List<String>> location2_list = new Dictionary<string, List<string>>(); // "동" 데이터가 저장되는 변수, 각 "구" 별로 "동" 이 저장된다.
+        Dictionary<String, List<String>> location2_list = new Dictionary<string, List<string>>(); // "구"별로 "동" 데이터가 저장되는 변수, 각 "구" 별로 "동" 이 저장된다.
         List<String> item_list = new List<string>(); // "품목" 데이터가 저장되는 변수
         List<String> pay_list = new List<string>(); // "결제" 데이터가 저장되는 변수
 
-        List<Tuple<string, string>> search = new List<Tuple<string, string>>();
-        List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>();
+        List<Tuple<string, string>> search = new List<Tuple<string, string>>(); //<변수명, 상호명> 형태의 결과 리스트
+        List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>(); //<상호명, x, y> 형태의 결과 리스트 
 
         String location = ""; // "구" 를 저장하는 변수
         String location2 = ""; // "동" 을 저장하는 변수
@@ -40,10 +40,10 @@ namespace DB_mini_Project
         public Form1()
         {
             InitializeComponent();
-            textBox1.KeyDown += Enter_KeyDown;
+            textBox1.KeyDown += Enter_KeyDown;  //엔터키 키다운 이벤트 활성화
             string html = "map.html";
             string dir = System.IO.Directory.GetCurrentDirectory();
-            string path = System.IO.Path.Combine(dir, html);
+            string path = System.IO.Path.Combine(dir, html);    //디렉토리 + 파일명
             Console.WriteLine(path);
             webBrowser1.Navigate(path);
         }
@@ -67,11 +67,11 @@ namespace DB_mini_Project
                 // 주소를 활용하여 쿼리문 작성.
                 string store_name = search[i].Item1;
                 string store_address = search[i].Item2;
-                string query = $"{site}?query={store_address}";
+                string query = $"{site}?query={store_address}";     //쿼리문
 
                 // 검색 요청을 보냅니다.
                 WebRequest request = WebRequest.Create(query);
-                string rkey = "4925a34ce72e895ab1290119ee11f9e1";
+                string rkey = "4925a34ce72e895ab1290119ee11f9e1";   //인증키
                 string header = "KakaoAK " + rkey;
                 request.Headers.Add("Authorization", header);
 
@@ -115,7 +115,6 @@ namespace DB_mini_Project
             if (idx < 0 || idx > listBox1.Items.Count - 1) return;  //유효하지 않은 클릭 시 
             var sel = tuples[idx];
             object res = webBrowser1.Document.InvokeScript("panTo", new object[] { sel.Item3, sel.Item2 });
-
         }
 
         // 검색 버튼입니다.
@@ -131,18 +130,13 @@ namespace DB_mini_Project
                 && (d[5].Equals(pay) || pay.Equals(""))
                     && ((d[1].Contains(textBox1.Text)) || (d[4].Contains(textBox1.Text)) || (d[5].Contains(textBox1.Text))))
                 {
-                 //   listBox1.Items.Add(d[1] + " " + d[7] + Environment.NewLine);
-
                     string store_name = d[1];
                     string store_address = d[7];
                     search.Add(new Tuple<string, string>(store_name, store_address));
-
                 }
             });
             
             plotMap();
-
-
 
         }
 
@@ -156,20 +150,18 @@ namespace DB_mini_Project
             string buf = sr.ReadLine();
             string[] sArr = buf.Split(',');
 
-
-            for (int i = 0; i < sArr.Length; i++)
-            {
-                String a = sArr[i];
-            }
+            //모든 데이터 읽으면서 필터에 필요한 컬럼값 추출
             while (true)
             {
                 buf = sr.ReadLine();
                 if (buf == null) break;
+
                 sArr = buf.Split(',');
-                location_list.Add(sArr[3]);
-                item_list.Add(sArr[2]);
-                pay_list.Add(sArr[5]);
-                if (!location2_list.ContainsKey(sArr[3]))
+                location_list.Add(sArr[3]); //구
+                item_list.Add(sArr[2]);     //품목 
+                pay_list.Add(sArr[5]);      //결제 방식
+
+                if (!location2_list.ContainsKey(sArr[3]))   //해당 "구"에 대한 "동"리스트가 없으면
                 {
                     location2_list[sArr[3]] = new List<string>();
                 }
@@ -177,6 +169,7 @@ namespace DB_mini_Project
                 data.Add(sArr);
             }
 
+            //Distinct(): 중복 제거
             location_list = location_list.Distinct().ToList();
             item_list = item_list.Distinct().ToList();
             pay_list = pay_list.Distinct().ToList();
@@ -239,12 +232,6 @@ namespace DB_mini_Project
             clear_pay_btn();
             //clear_location2_btn();
 
-            flowLayoutPanel1.AutoScroll = true;
-            flowLayoutPanel2.AutoScroll = true;
-            flowLayoutPanel3.AutoScroll = true;
-            flowLayoutPanel4.AutoScroll = true;
-
-
             sr.Close();
 
         }
@@ -260,7 +247,7 @@ namespace DB_mini_Project
             }
         }
 
-
+        // 
         // "구" 버튼이 나오게 하는 작업입니다.
         private void clear_location_btn()
         {

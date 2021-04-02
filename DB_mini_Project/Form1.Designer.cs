@@ -45,11 +45,12 @@ namespace DB_mini_Project
             this.flowLayoutPanel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel4.AutoScroll = true;
             this.flowLayoutPanel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.flowLayoutPanel4.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.flowLayoutPanel4.Location = new System.Drawing.Point(392, 77);
             this.flowLayoutPanel4.Name = "flowLayoutPanel4";
-            this.flowLayoutPanel4.Size = new System.Drawing.Size(351, 85);
+            this.flowLayoutPanel4.Size = new System.Drawing.Size(351, 75);
             this.flowLayoutPanel4.TabIndex = 32;
             // 
             // webBrowser1
@@ -84,11 +85,12 @@ namespace DB_mini_Project
             this.flowLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel3.AutoScroll = true;
             this.flowLayoutPanel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.flowLayoutPanel3.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.flowLayoutPanel3.Location = new System.Drawing.Point(24, 280);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(804, 87);
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(804, 77);
             this.flowLayoutPanel3.TabIndex = 31;
             // 
             // label1
@@ -114,7 +116,7 @@ namespace DB_mini_Project
             this.listBox1.ItemHeight = 12;
             this.listBox1.Location = new System.Drawing.Point(630, 373);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(273, 340);
+            this.listBox1.Size = new System.Drawing.Size(273, 328);
             this.listBox1.TabIndex = 34;
             this.listBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseClick);
             // 
@@ -123,11 +125,12 @@ namespace DB_mini_Project
             this.flowLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel2.AutoScroll = true;
             this.flowLayoutPanel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.flowLayoutPanel2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.flowLayoutPanel2.Location = new System.Drawing.Point(24, 179);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(801, 80);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(801, 70);
             this.flowLayoutPanel2.TabIndex = 33;
             // 
             // flowLayoutPanel1
@@ -135,18 +138,19 @@ namespace DB_mini_Project
             this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel1.AutoScroll = true;
             this.flowLayoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.flowLayoutPanel1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.flowLayoutPanel1.Location = new System.Drawing.Point(24, 77);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(351, 96);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(351, 86);
             this.flowLayoutPanel1.TabIndex = 30;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(964, 751);
+            this.ClientSize = new System.Drawing.Size(964, 741);
             this.Controls.Add(this.flowLayoutPanel4);
             this.Controls.Add(this.webBrowser1);
             this.Controls.Add(this.textBox1);
