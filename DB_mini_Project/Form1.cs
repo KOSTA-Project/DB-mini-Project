@@ -78,39 +78,42 @@ namespace DB_mini_Project
                 string header = "KakaoAK " + rkey;
                 request.Headers.Add("Authorization", header);
 
-                // 리스트 박스에는 상호명만 추가.
-                listBox1.Items.Add(store_name);
-
                 // 검색 결과가 없을 수 있는 예외 처리.
-                try
+                
+                
+                WebResponse response = request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(stream, Encoding.UTF8);  // 받아온 응답을 읽어오기.
+                String json = reader.ReadToEnd();
+                stream.Close();
+
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                dynamic dob = js.Deserialize<dynamic>(json);    //json 파일을 효과적으로 쓰기위해 역직렬화.
+                dynamic docs = dob["documents"];                //documents의 벨류들만 저장.
+
+                // 검색 결과가 없을 때.
+                if (docs.Length==0)
                 {
-                    WebResponse response = request.GetResponse();
-                    Stream stream = response.GetResponseStream();
-                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);  // 받아온 응답을 읽어오기.
-                    String json = reader.ReadToEnd();
-                    stream.Close();
-
-                    JavaScriptSerializer js = new JavaScriptSerializer();
-                    dynamic dob = js.Deserialize<dynamic>(json);    //json 파일을 효과적으로 쓰기위해 역직렬화.
-                    dynamic docs = dob["documents"];                //documents의 벨류들만 저장.
-
+                    continue;
+                }
+                else
+                {
                     double x = double.Parse(docs[0]["x"]);      //lng
                     double y = double.Parse(docs[0]["y"]);      //lat
                     object[] arr = new object[] { store_name,store_address, y, x };
 
                     // html 파일 내부의 javascript 함수 실행을 위한 전처리.  
                     tuples.Add(new Tuple<string, double, double>(store_name, x, y));
+                    listBox1.Items.Add(store_name);
                     // 내부의 함수들 실행.
                     webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
                     webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
                 }
-                catch (Exception err)
-                {   //검색결과 없는 경우(바른 결과인경우-> 해당 영역에 사용처 없는 경우)
-                    //너무 많은 결과 값을 가질 경우
-                    Console.WriteLine(tuples.Count);
-                    Console.WriteLine(search.Count);
-                    MessageBox.Show(err.Message);
-                }
+ 
+            }
+            if (listBox1.Items.Count == 0)
+            {
+                MessageBox.Show("검색 결과가 없습니다.");
             }
         }
 
