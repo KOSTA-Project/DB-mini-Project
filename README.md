@@ -4,6 +4,8 @@ KOSTA Weeks 5 mini Project
 HTML File , Csv File을 솔루션파일 > bin > 디버그에 넣어야 실행이 가능합니다.
 
 * Mission: 공공데이터 포털의 데이터(csv)를 이용해 검색 필터를 만들고, 검색 결과를 리스트와 지도를 통해 확인하는 프로그램
+* 결과 화면
+![image](https://user-images.githubusercontent.com/78033158/113406314-3f60c600-93e6-11eb-9189-e3dd3d23e3ab.png)
 * 기능
   * Data Processing 
     * Data preprocessing: 파일 내의 데이터가 정확하지 않은 것, 쉼표가 있는 주소 필드 맨뒤로
@@ -17,9 +19,8 @@ HTML File , Csv File을 솔루션파일 > bin > 디버그에 넣어야 실행이
   * Plot Map
     * 결과 데이터를 List Box에 출력 및 지도에 표시
     * List Box의 데이터 선택 시, 해당 데이터(사용처)의 위치로 지도 이동
-* 결과 화면
-
-![image](https://user-images.githubusercontent.com/78033158/113406314-3f60c600-93e6-11eb-9189-e3dd3d23e3ab.png)
+* Flow Chart
+![image](https://user-images.githubusercontent.com/78033158/113406628-c31ab280-93e6-11eb-82d5-31fefa8a8048.png)
 
 * 진행 과정에서 이슈 사항
     * 공공데이터 포털에서 주어진 데이터가 정확하지 않아 별도의 전처리과정 필요했음
