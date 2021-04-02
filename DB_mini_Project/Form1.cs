@@ -17,34 +17,37 @@ namespace DB_mini_Project
 {
     public partial class Form1 : Form
     {
-        List<String> location_list = new List<string>(); // "구" 데이터가 저장되는 변수
-        Dictionary<String, List<String>> location2_list = new Dictionary<string, List<string>>(); // "구"별로 "동" 데이터가 저장되는 변수, 각 "구" 별로 "동" 이 저장된다.
-        List<String> item_list = new List<string>(); // "품목" 데이터가 저장되는 변수
-        List<String> pay_list = new List<string>(); // "결제" 데이터가 저장되는 변수
+        List<String[]> data = new List<String[]>(); // csv 파일 데이터 저장 리스트
 
-        List<Tuple<string, string>> search = new List<Tuple<string, string>>(); //<변수명, 상호명> 형태의 결과 리스트
-        List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>(); //<상호명, x, y> 형태의 결과 리스트 
+        List<String> location_list = new List<string>(); // "구" 데이터를 담는 리스트
+        Dictionary<String, List<String>> location2_list = new Dictionary<string, List<string>>(); //"구"에 따른 "동" 데이터 리스트 (key:"구", value:"구"에 해당하는 "동" 리스트)
+        List<String> item_list = new List<string>();     // "품목" 
+        List<String> pay_list = new List<string>();      // "결제방식" 
 
-        String location = ""; // "구" 를 저장하는 변수
-        String location2 = ""; // "동" 을 저장하는 변수
-        String item = ""; // "품목" 를 저장하는 변수
-        String pay = ""; // "결제" 를 저장하는 변수
+        Control[] BTN_location; // "구" 버튼 컨트롤
+        Dictionary<String, Control[]> BTN_location2 = new Dictionary<string, Control[]>(); // "동" 
+        Control[] BTN_item;     // "품목"
+        Control[] BTN_pay;      // "결제방식"
 
-        Control[] BTN_location; // "구" 버튼을 생성하는 변수
-        Dictionary<String, Control[]> BTN_location2 = new Dictionary<string, Control[]>(); // "동" 변수를 생성하는 변수
-        Control[] BTN_item; // "품목" 버튼을 생성하는 변수
-        Control[] BTN_pay; // "결제" 버튼을 생성하는 변수
 
-        List<String[]> data = new List<String[]>(); // 엑셀 파일에서 읽어온 데이터를 저장하는 변수
+        String location = "";  // 선택된 "구"값
+        String location2 = ""; // "동"
+        String item = "";      // "품목"
+        String pay = "";       // "결제방식"
+
+
+        List<Tuple<string, string>> search = new List<Tuple<string, string>>(); //필터 결과 <변수명, 상호명> 형태의 리스트로
+        List<Tuple<string, double, double>> tuples = new List<Tuple<string, double, double>>(); //필터 결과 <상호명, x, y> 형태의 리스트 
+
 
         public Form1()
         {
             InitializeComponent();
             textBox1.KeyDown += Enter_KeyDown;  //엔터키 키다운 이벤트 활성화
             string html = "map.html";
-            string dir = System.IO.Directory.GetCurrentDirectory();
-            string path = System.IO.Path.Combine(dir, html);    //디렉토리 + 파일명
-            Console.WriteLine(path);
+            string dir = System.IO.Directory.GetCurrentDirectory();     //현 디렉토리
+            string path = System.IO.Path.Combine(dir, html);            //디렉토리 + 파일명
+
             webBrowser1.Navigate(path);
         }
         private void init()     //초기화
@@ -330,7 +333,6 @@ namespace DB_mini_Project
         public void Btn_item_Click(object sender, EventArgs e)
         {
             item = ((Button)sender).Text;
-
 
             clear_item_btn();
             ((Button)sender).BackColor = Color.Gray;
