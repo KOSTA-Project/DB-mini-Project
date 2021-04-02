@@ -94,19 +94,20 @@ namespace DB_mini_Project
             pay_list = pay_list.Distinct().ToList();
 
             // "구"리스트의 값들을 보면서 각각에 대한 "동"리스트 중복 제거
-            // "동" 검색을 위해 "동"리스트 수만큼의 버튼 생성
+            // "동" 버튼컨트롤 배열 선언 --> "동" 검색을 위해 "동"리스트 수만큼의 배열 크기로
             foreach (String key in location_list)
             {
                 location2_list[key] = location2_list[key].Distinct().ToList();
                 BTN_location2[key] = new Control[location2_list[key].Count];
             }
-            //각각 리스트 수만큼 버튼컨트롤 생성
+            // 각각 리스트 수만큼 버튼컨트롤 배열 선언
             BTN_location = new Control[location_list.Count];
             BTN_item = new Control[item_list.Count];
             BTN_pay = new Control[pay_list.Count];
 
-            //
-            for (int i = 0; i < location_list.Count; i++)
+            // 버튼컨트롤 배열에 각 원소마다 버튼컨트롤 선언, 버튼속성 지정, 클릭이벤트 활성화
+            // flowLayoutPanel에 각 버튼 추가
+            for (int i = 0; i < location_list.Count; i++)   // "구" 검색 버튼 만들기
             {
                 BTN_location[i] = new Button();
                 BTN_location[i].Name = i.ToString();
@@ -119,8 +120,7 @@ namespace DB_mini_Project
                 flowLayoutPanel1.Controls.Add(BTN_location[i]);
 
             }
-
-            for (int i = 0; i < item_list.Count; i++)
+            for (int i = 0; i < item_list.Count; i++)  // "품목"
             {
                 BTN_item[i] = new Button();
                 BTN_item[i].Name = i.ToString();
@@ -133,8 +133,7 @@ namespace DB_mini_Project
                 flowLayoutPanel3.Controls.Add(BTN_item[i]);
 
             }
-
-            for (int i = 0; i < pay_list.Count; i++)
+            for (int i = 0; i < pay_list.Count; i++)    // "결제 방식"
             {
                 BTN_pay[i] = new Button();
                 BTN_pay[i].Name = i.ToString();
@@ -148,155 +147,76 @@ namespace DB_mini_Project
 
             }
 
-
+            //버튼 선택 전이므로 모든 버튼의 색 default로
             clear_location_btn();
             clear_item_btn();
             clear_pay_btn();
             //clear_location2_btn();
 
             sr.Close();
-
-        }
-        private void plotMap()
-        {
-            string site = "https://dapi.kakao.com/v2/local/search/address.json";
-
-            // 검색 결과 리스트를 조회.
-            for (int i = 0; i < search.Count; i++)
-            {
-                // 주소를 활용하여 쿼리문 작성.
-                string store_name = search[i].Item1;
-                string store_address = search[i].Item2;
-                string query = $"{site}?query={store_address}";     //쿼리문
-
-                // 검색 요청을 보냅니다.
-                WebRequest request = WebRequest.Create(query);
-                string rkey = "4925a34ce72e895ab1290119ee11f9e1";   //인증키
-                string header = "KakaoAK " + rkey;
-                request.Headers.Add("Authorization", header);
-
-                // 검색 결과가 없을 수 있는 예외 처리.
-                
-                
-                WebResponse response = request.GetResponse();
-                Stream stream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(stream, Encoding.UTF8);  // 받아온 응답을 읽어오기.
-                String json = reader.ReadToEnd();
-                stream.Close();
-
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                dynamic dob = js.Deserialize<dynamic>(json);    //json 파일을 효과적으로 쓰기위해 역직렬화.
-                dynamic docs = dob["documents"];                //documents의 벨류들만 저장.
-
-                // 검색 결과가 없을 때.
-                if (docs.Length==0)
-                {
-                    continue;
-                }
-                else
-                {
-                    double x = double.Parse(docs[0]["x"]);      //lng
-                    double y = double.Parse(docs[0]["y"]);      //lat
-                    object[] arr = new object[] { store_name,store_address, y, x };
-
-                    // html 파일 내부의 javascript 함수 실행을 위한 전처리.  
-                    tuples.Add(new Tuple<string, double, double>(store_name, x, y));
-                    listBox1.Items.Add(store_name);
-                    // 내부의 함수들 실행.
-                    webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
-                    webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
-                }
- 
-            }
-            if (listBox1.Items.Count == 0)
-            {
-                MessageBox.Show("검색 결과가 없습니다.");
-            }
         }
 
-        private void listBox1_MouseClick(object sender, MouseEventArgs e)
-        {
-            int idx = listBox1.SelectedIndex;
-            if (idx < 0 || idx > listBox1.Items.Count - 1) return;  //유효하지 않은 클릭 시 
-            var sel = tuples[idx];
-            object res = webBrowser1.Document.InvokeScript("panTo", new object[] { sel.Item3, sel.Item2 });
-        }
-
-        // 검색 버튼입니다.
+        // 검색 버튼
+        //모든 데이터(data)를 조회하며 선택된 컬럼값과 비교--> 같거나 선택 안한 경우
         private void button1_Click(object sender, EventArgs e)
         {
             init();
             data.ForEach(d =>
             {
-             
-                if ((d[3].Equals(location) || location.Equals(""))
-                && (d[4].Equals(location2) || location2.Equals(""))
-                && (d[2].Equals(item) || item.Equals(""))
-                && (d[5].Equals(pay) || pay.Equals(""))
-                    && ((d[1].Contains(textBox1.Text)) || (d[4].Contains(textBox1.Text)) || (d[5].Contains(textBox1.Text))))
+                if ((d[3].Equals(location) || location.Equals(""))  // "구"
+                && (d[4].Equals(location2) || location2.Equals("")) // "동"
+                && (d[2].Equals(item) || item.Equals(""))           // "품목"
+                && (d[5].Equals(pay) || pay.Equals(""))             // "결제 방식"
+                    && ((d[1].Contains(textBox1.Text)) || (d[4].Contains(textBox1.Text)) || (d[5].Contains(textBox1.Text))))  // "상호명"
                 {
-                    string store_name = d[1];
-                    string store_address = d[7];
-                    search.Add(new Tuple<string, string>(store_name, store_address));
+                    string store_name = d[1];       // "상호명"
+                    string store_address = d[7];    // "주소"
+                    search.Add(new Tuple<string, string>(store_name, store_address));   // 필터 결과 저장
                 }
             });
-            
-            plotMap();
+
+            plotMap();   //필터된 사용처들의 주소로 좌표값을 얻어 map으로 구현
 
         }
 
-
-
-
-
-        // enter key 처리 부분입니다.
-        private void Enter_KeyDown(object sender, KeyEventArgs e)
+        // 각 버튼 클릭 시, 선택된 값 저장 후 이전 선택버튼색깔 해제, 해당 버튼 색만 gray로
+        // "구"필터의 경우, "동" layout을 없애고 선택된 "구"(key)에 대한 "동"버튼 생성 및 활성화
+        public void Btn_location_Click(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                button1_Click(sender, e);
-            }
+            location = ((Button)sender).Text;   //버튼컨트롤의 텍스트(선택된 "구"값)
+            location2 = "";
+            flowLayoutPanel2.Controls.Clear();
+            clear_location_btn();
+            add_location2_btn(location);
+            ((Button)sender).BackColor = Color.Gray;
         }
 
-        // 
-        // "구" 버튼이 나오게 하는 작업입니다.
-        private void clear_location_btn()
+        public void Btn_location2_Click(object sender, EventArgs e) // "동"
         {
-            for (int i = 0; i < location_list.Count; i++)
-            {
-                BTN_location[i].BackColor = Button.DefaultBackColor;
-            }
+            location2 = ((Button)sender).Text;
+            clear_location2_btn();
+            ((Button)sender).BackColor = Color.Gray;
         }
 
-        // "동" 버튼이 나오게 하는 작업입니다.
-        private void clear_location2_btn()
+        public void Btn_item_Click(object sender, EventArgs e)  //"품목"
         {
-            for (int i = 0; i < location2_list[location].Count; i++)
-            {
-                BTN_location2[location][i].BackColor = Button.DefaultBackColor;
-            }
+            item = ((Button)sender).Text;
+
+            clear_item_btn();
+            ((Button)sender).BackColor = Color.Gray;
         }
 
-        // "품목" 버튼이 나오게 하는 작업입니다.
-        private void clear_item_btn()
+        public void Btn_pay_Click(object sender, EventArgs e)   // "결제방식"
         {
-            for (int i = 0; i < item_list.Count; i++)
-            {
-                BTN_item[i].BackColor = Button.DefaultBackColor;
-            }
-        }
+            pay = ((Button)sender).Text;
 
-        // "결제 방법" 버튼이 나오게 하는 작업입니다.
-        private void clear_pay_btn()
-        {
-            for (int i = 0; i < pay_list.Count; i++)
-            {
-                BTN_pay[i].BackColor = Button.DefaultBackColor;
-            }
+            clear_pay_btn();
+            ((Button)sender).BackColor = Color.Gray;
         }
 
 
-        // "구"를 눌렀을때 그 안의 "동"이 나오도록 하는 작업 입니다.
+        // "구"를 눌렀을때 그 안의 "동"이 나오도록 하는 작업
+        // 선택된 "구"(key)에 대한 "동"버튼 생성 및 활성화
         private void add_location2_btn(String key)
         {
             for (int i = 0; i < location2_list[key].Count; i++)
@@ -315,43 +235,111 @@ namespace DB_mini_Project
             }
         }
 
-        // "구" 단위 버튼을 눌렀을때 호출되는 함수입니다.
-        // "동" 을 초기화하고 해당 "구" 에 해당하는 "동" 을 새로 만듬
-        public void Btn_location_Click(object sender, EventArgs e)
+        //검색 버튼 색깔 초기화
+        private void clear_location_btn()   // "구"
         {
-            location = ((Button)sender).Text;
-            location2 = "";
-            flowLayoutPanel2.Controls.Clear();
-            clear_location_btn();
-            add_location2_btn(location);
-            ((Button)sender).BackColor = Color.Gray;
+            for (int i = 0; i < location_list.Count; i++)
+            {
+                BTN_location[i].BackColor = Button.DefaultBackColor;
+            }
+        }
+        private void clear_location2_btn()  // "동"
+        {
+            for (int i = 0; i < location2_list[location].Count; i++)
+            {
+                BTN_location2[location][i].BackColor = Button.DefaultBackColor;
+            }
+        }
+        private void clear_item_btn()   // "품목"
+        {
+            for (int i = 0; i < item_list.Count; i++)
+            {
+                BTN_item[i].BackColor = Button.DefaultBackColor;
+            }
+        }
+        private void clear_pay_btn()    // "결제 방식"
+        {
+            for (int i = 0; i < pay_list.Count; i++)
+            {
+                BTN_pay[i].BackColor = Button.DefaultBackColor;
+            }
         }
 
-        // "동" 단위 버튼을 눌렀을때 호출되는 함수입니다.
-        public void Btn_location2_Click(object sender, EventArgs e)
+        //상호명 입력 후 값을 처리하는 이벤트
+        // enter key 처리 부분입니다.
+        private void Enter_KeyDown(object sender, KeyEventArgs e)
         {
-            location2 = ((Button)sender).Text;
-            clear_location2_btn();
-            ((Button)sender).BackColor = Color.Gray;
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1_Click(sender, e);
+            }
         }
 
-        // "동" 단위 버튼을 눌렀을때 호출되는 함수입니다.
-        public void Btn_item_Click(object sender, EventArgs e)
+        //필터된 사용처들의 주소로 좌표값을 얻어 map으로 구현
+        private void plotMap()
         {
-            item = ((Button)sender).Text;
+            string site = "https://dapi.kakao.com/v2/local/search/address.json";    // url
 
-            clear_item_btn();
-            ((Button)sender).BackColor = Color.Gray;
+            // 검색 결과 리스트를 조회.
+            for (int i = 0; i < search.Count; i++)
+            {
+                // 주소를 활용하여 쿼리문 작성.
+                string store_name = search[i].Item1;
+                string store_address = search[i].Item2;
+                string query = $"{site}?query={store_address}";     //쿼리문
+
+                // 검색 요청을 보냅니다.
+                WebRequest request = WebRequest.Create(query);
+                string rkey = "4925a34ce72e895ab1290119ee11f9e1";   //인증키
+                string header = "KakaoAK " + rkey;
+                request.Headers.Add("Authorization", header);
+                
+                // 요청 및 응답 받기
+                WebResponse response = request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(stream, Encoding.UTF8);  // 받아온 응답을 읽어오기.
+                String json = reader.ReadToEnd();
+                stream.Close();
+
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                dynamic dob = js.Deserialize<dynamic>(json);    //json 파일을 효과적으로 쓰기위해 역직렬화.
+                dynamic docs = dob["documents"];                //documents의 벨류들만 저장.
+
+                if (docs.Length==0)     // 검색 결과가 없을 때.
+                {
+                    continue;    // 맵에 표시하지 않고 다음 결과값으로
+                }
+                else
+                {
+                    double x = double.Parse(docs[0]["x"]);      //lng, 경도
+                    double y = double.Parse(docs[0]["y"]);      //lat, 위도
+                    object[] arr = new object[] { store_name,store_address, y, x };
+
+                    // html 파일 내부의 javascript 함수 실행을 위한 전처리.  
+                    tuples.Add(new Tuple<string, double, double>(store_name, x, y));
+                    listBox1.Items.Add(store_name);
+                    // 내부의 함수들 실행.
+                    webBrowser1.Document.InvokeScript("addMarker", arr);  //마커추가 
+                    webBrowser1.Document.InvokeScript("panTo", new object[] { y, x });  //리스트 첫 요소 위치를 지도 중심으로
+                }
+ 
+            }
+            if (listBox1.Items.Count == 0)  // 결과 리스트가 빈 경우
+            {
+                MessageBox.Show("검색 결과가 없습니다.");
+            }
         }
 
-        // "동" 단위 버튼을 눌렀을때 호출되는 함수입니다.
-        public void Btn_pay_Click(object sender, EventArgs e)
+        // 출력된 리스트 박스에서 항목 클릭 시 지도의 중심이 클릭된 곳으로 이동
+        private void listBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            pay = ((Button)sender).Text;
+            int idx = listBox1.SelectedIndex;
+            if (idx < 0 || idx > listBox1.Items.Count - 1) return;  //유효하지 않은 클릭 시 
 
-
-            clear_pay_btn();
-            ((Button)sender).BackColor = Color.Gray;
+            var sel = tuples[idx];  // 선택된 사용처
+            webBrowser1.Document.InvokeScript("panTo", new object[] { sel.Item3, sel.Item2 });  //지도 이동
         }
+
+
     }
 }
